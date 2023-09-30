@@ -38,7 +38,13 @@ public class WhatsappService {
     }
 
     public String changeAdmin(User approver, User user, Group group) {
-        return "";
+        try{
+            String response = whatsappRepository.changeAdmin(approver,user,group);
+            return response;
+        }
+        catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     public int removeUser(User user) {

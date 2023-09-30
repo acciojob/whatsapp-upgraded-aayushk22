@@ -82,4 +82,28 @@ public class WhatsappRepository {
         groupToMessagesDb.put(group,messageList);
         return groupToMessagesDb.get(group).size();
     }
+
+    public String changeAdmin(User approver, User user, Group group) {
+        //Throw "Group does not exist" if the mentioned group does not exist
+        //Throw "Approver does not have rights" if the approver is not the current admin of the group
+        //Throw "User is not a participant" if the user is not a part of the group
+        //Change the admin of the group to "user" and return "SUCCESS".
+        // Note that at one time there is only one admin and the admin rights are transferred from approver to user.
+
+        if (!groupUsersDb.containsKey(group)) {
+            throw new RuntimeException("Group does not exist");
+        }
+
+        if (groupAdminDB.get(group) != approver) {
+            throw new RuntimeException("Approver does not have rights");
+        }
+
+        if (!groupUsersDb.get(group).contains(user)) {
+            throw new RuntimeException("User is not a participant");
+        }
+
+        User currentAdmin = groupAdminDB.get(group);
+        groupAdminDB.put(group,user);
+        return "SUCCESS";
+    }
 }

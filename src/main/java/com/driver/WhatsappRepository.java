@@ -158,7 +158,7 @@ public class WhatsappRepository {
             }
         }
 
-        groupToMessagesDb.put(userGroup,messages);
+
 
         return groupUsersDb.get(userGroup).size() + groupToMessagesDb.get(userGroup).size() + senderMap.size();
     }

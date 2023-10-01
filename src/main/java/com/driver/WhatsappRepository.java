@@ -86,8 +86,8 @@ public class WhatsappRepository {
         messageList.add(message);
         groupToMessagesDb.put(group,messageList);
 
-        //getting the list of messages of a user and adding the new message to that list
 
+        senderMap.put(message,sender);
 
         return groupToMessagesDb.get(group).size();
     }

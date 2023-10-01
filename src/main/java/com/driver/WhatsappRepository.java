@@ -17,6 +17,7 @@ public class WhatsappRepository {
     HashMap<Integer,Message> messageHashMap;
     HashMap<Group,List<Message>> groupToMessagesDb;
 
+    HashMap<Message,User> senderMap;
 
 
     public WhatsappRepository() {
@@ -25,7 +26,7 @@ public class WhatsappRepository {
         messageHashMap = new HashMap<>();
         groupUsersDb = new HashMap<>();
         groupToMessagesDb = new HashMap<>();
-
+        senderMap = new HashMap<>();
     }
 
     public String createUser(String name, String mobile) {
@@ -115,62 +116,50 @@ public class WhatsappRepository {
         return "SUCCESS";
     }
 
-//    public int removeUser(User user) {
-//        return 0;
-//        //A user belongs to exactly one group
-//        //If user is not found in any group, throw "User not found" exception
-////        User toBeRemoved = null;
-////        Group userRemovalGrp = null;
-////        List<User> listForRemoval = null;
-////        for (Group group: groupUsersDb.keySet()) {
-////            List<User> listOfUserInGroup = groupUsersDb.get(group);
-////            for (User u: listOfUserInGroup) {
-////                if (u == user) {
-////                    toBeRemoved = u;
-////                    listForRemoval = listOfUserInGroup;
-////                    userRemovalGrp = group;
-////                    break;
-////                }
-////            }
-////        }
-////        if (toBeRemoved == null) throw new RuntimeException("User not found");
-////
-////        //If user is found in a group and it is the admin, throw "Cannot remove admin" exception
-////        if (toBeRemoved == groupAdminDB.get(userRemovalGrp)) throw new RuntimeException("Cannot remove admin");
-////
-////        //If user is not the admin, remove the user from the group, remove all its messages from all the databases,
-////        // and update relevant attributes accordingly.
-////        listForRemoval.remove(toBeRemoved);
-////        groupUsersDb.put(userRemovalGrp,listForRemoval);
-////
-////        List<Message> messagesOfUser = userToMessagesDb.get(user);
-////        userToMessagesDb.put(user,new ArrayList<>()); //emptying all the messages of the user
-////
-////        List<Message> groupMessageList = groupToMessagesDb.get(userRemovalGrp);
-////        List<Message> copy = new ArrayList<>();
-////        copy = groupMessageList;
-////        for (Message i: copy) {
-////            for (Message j: messagesOfUser) {
-////                if(i == j) {
-////                    groupMessageList.remove(j);
-////                    continue;
-////                }
-////            }
-////        }
-////
-////        groupToMessagesDb.put(userRemovalGrp,groupMessageList);
-////
-////        for (int i: messageHashMap.keySet()) {
-////            Message message = messageHashMap.get(i);
-////            for (Message m: messagesOfUser) {
-////                if (m == message) {
-////                    messageHashMap.remove(i);
-////                }
-////            }
-////        }
-////
-////        //If user is removed successfully,
-////        // return (the updated number of users in the group + the updated number of messages in group + the updated number of overall messages)
-////        return groupUsersDb.get(userRemovalGrp).size() + groupToMessagesDb.get(userRemovalGrp).size() + messageHashMap.size();
-//    }
+
+    public int removeUser(User user) {
+        Boolean flag = false;
+
+        List<Message> messageList = new ArrayList<>();
+        for (Message message : senderMap.keySet()){
+            if (senderMap.get(message).equals(user)){
+                messageList.add(message);
+            }
+        }
+        for (Message message : messageList){
+            if (senderMap.containsKey(message)){
+                senderMap.remove(message);
+            }
+        }
+
+        Group userGroup = null;
+
+        for (Group group: groupUsersDb.keySet()) {
+            if (groupAdminDB.get(group).equals(user)) {
+                throw new RuntimeException("Cannot remove admin");
+            }
+
+            List<User> userList = groupUsersDb.get(group);
+            if (userList.contains(user)) {
+                flag = true;
+                userGroup = group;
+                userList.remove(user);
+            }
+        }
+
+        if (flag == false){
+            throw new RuntimeException("User not found");
+        }
+
+        List<Message> messages = groupToMessagesDb.get(userGroup);
+        for (Message message: messageList) {
+            if (messages.contains(message)){
+                messages.remove(message);
+            }
+        }
+
+        groupToMessagesDb.put(userGroup,messages);
+
+        return groupUsersDb.get(userGroup).size() + groupToMessagesDb.get(userGroup).size() + senderMap.size();
+    }
 }

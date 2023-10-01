@@ -48,7 +48,9 @@ public class WhatsappService {
     }
 
     public int removeUser(User user) {
-        return 0;
+
+        int response = whatsappRepository.removeUser(user);
+        return response;
     }
 
     public String findMessage(Date start, Date end, int k) {

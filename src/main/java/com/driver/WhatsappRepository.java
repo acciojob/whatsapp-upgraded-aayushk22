@@ -17,7 +17,7 @@ public class WhatsappRepository {
     HashMap<Integer,Message> messageHashMap;
     HashMap<Group,List<Message>> groupToMessagesDb;
 
-    HashMap<User,List<Message>> userToMessagesDb;
+
 
     public WhatsappRepository() {
         userHashMap = new HashMap<>();
@@ -25,7 +25,7 @@ public class WhatsappRepository {
         messageHashMap = new HashMap<>();
         groupUsersDb = new HashMap<>();
         groupToMessagesDb = new HashMap<>();
-        userToMessagesDb = new HashMap<>();
+
     }
 
     public String createUser(String name, String mobile) {
@@ -86,9 +86,7 @@ public class WhatsappRepository {
         groupToMessagesDb.put(group,messageList);
 
         //getting the list of messages of a user and adding the new message to that list
-        List<Message> userToMessageList = userToMessagesDb.get(sender);
-        userToMessageList.add(message);
-        userToMessagesDb.put(sender,userToMessageList);
+
 
         return groupToMessagesDb.get(group).size();
     }
